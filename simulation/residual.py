@@ -1,7 +1,7 @@
 import jax.random as random
 import jax
 import jax.numpy as jnp
-from fixedpoint import fixed_point_iteration
+
 
 def compute_M1(mu, l_k):
     return (1.0 / 3.0) * mu * l_k
@@ -40,11 +40,10 @@ def compute_Jd(J):
 
 def residual_fn(Xk, params):
     # --- unpack once ---
-    mu, M, h, g, l_k, EA, N, force, R_k, R_km1, rho_c, Jd, tau = (
+    mu, M, h, g, l_k, EA, N, force,  = (
         params['mu'], params['M'], params['h'], params['g'],
         params['l_k'], params['EA'], params['N'], params['force'],
-        params['R_k'], params['R_km1'], params['rho_c'], params['Jd'],
-        params['torque']
+
     )
 
     e3 = jnp.array([0., 0., 1.])
@@ -56,7 +55,7 @@ def residual_fn(Xk, params):
     residuals = jnp.zeros_like(del_qk)
 
     # =====================================================
-    # Base node residual 
+    # Base node residual
     # =====================================================
     residuals = residuals.at[0].set(del_qk[0] - params["delta_base_pos"])
 
@@ -94,25 +93,25 @@ def residual_fn(Xk, params):
     DqVk_last  = -(0.5 * mu * l_k + M) * g * e3 + grad_Ve_kN
 
     res_last = (
-        (1/h) * (M1_k + M) * del_qk[-2]
-      + (1/h) * M12_k * del_qk[-3]
-      - (1/h) * (M1_k + M) * del_qkm1[-2]
-      - (1/h) * M12_k * del_qkm1[-3]
+        (1/h) * (M1_k + M) * del_qk[-1]
+      + (1/h) * M12_k * del_qk[-2]
+      - (1/h) * (M1_k + M) * del_qkm1[-1]
+      - (1/h) * M12_k * del_qkm1[-2]
       + h * DqVk_last - h * force
     )
-    residuals = residuals.at[-2].set(res_last)
+    residuals = residuals.at[-1].set(res_last)
 
-    # =====================================================
-    # Attitude residual
-    # =====================================================
-    F_k   = cayley(del_qk[-1])
-    F_km1 = cayley(del_qkm1[-1])
+    # # =====================================================
+    # # Attitude residual
+    # # =====================================================
+    # F_k   = cayley(del_qk[-1])
+    # F_km1 = cayley(del_qkm1[-1])
 
-    res_att = (
-        (1.0/h) * vee(F_k @ Jd - Jd @ F_k.T - Jd @ F_km1 + F_km1.T @ Jd)
-      - h * tau
-    )
-    residuals = residuals.at[-1].set(res_att)
+    # res_att = (
+    #     (1.0/h) * vee(F_k @ Jd - Jd @ F_k.T - Jd @ F_km1 + F_km1.T @ Jd)
+    #   - h * tau
+    # )
+    # residuals = residuals.at[-1].set(res_att)
 
     # =====================================================
     # Return flat vector
