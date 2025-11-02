@@ -1,9 +1,12 @@
 import jax
 import jax.numpy as jnp
 
-from .newton_iter import newton_solve
 from .residual import residual_fn
 
+from .newton_iter import newton_solve as newton_solve_py
+
+# Mark residual_fn (arg 0) and params (arg 2) as static
+newton_solve = jax.jit(newton_solve_py, static_argnums=(0,))
 
 
 # ----------------------------------------
@@ -28,8 +31,8 @@ def step_fn(carry, _):
     params["step"] += 1
 
     # Base excitation (example: vertical oscillation)
-    omega_b = params["omega"]
-    z_pos = 0*0.1 * omega_b * jnp.cos(omega_b * t)
+    omega_b = 2*jnp.pi*params["omega"]
+    z_pos = 0.1 * omega_b * jnp.cos(omega_b * t)
     params["delta_base_pos"] = jnp.array([0.0, 0.0, z_pos]) * params["h"]
 
     # === State update ===
@@ -43,7 +46,7 @@ def step_fn(carry, _):
 # ----------------------------------------
 # Simulation runner
 # ----------------------------------------
-def run_simulation(params, num_steps=200):
+def run_simulation(params, num_steps=10):
     """
     Runs a full simulation with JAX scan.
 

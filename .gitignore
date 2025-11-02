@@ -1,0 +1,5 @@
+*.npz
+*.svg
+*.png
+*.txt
+*.pyc

@@ -33,10 +33,6 @@ def newton_solve(
     init_state = (x0, F(x0), 0, jnp.inf)
     Xk, r, k, dx_norm = jax.lax.while_loop(cond_fun, body_fun, init_state)
 
-    if log:
-        jax.debug.print(
-            "Newton finished in {iters} iterations, ||r||={resid:.3e}, ||dx||={dx:.3e}, X={x}",
-            iters=k, resid=jnp.linalg.norm(r), dx=dx_norm, x=Xk
-        )
+
 
     return Xk

@@ -4,15 +4,6 @@ import time
 
 
 def animate_traj(traj, duration_sec=100, fps=60, stl_file="Assembly.STL"):
-    """
-    Animate a trajectory of string + drone using PyVista.
-
-    Args:
-        traj : ndarray of shape (num_steps, flat_dim) or (num_steps, N+1, 3)
-        duration_sec (float): target animation duration in seconds
-        fps (int): frames per second
-        stl_file (str): path to drone STL file
-    """
     # --- Reshape trajectory if flat ---
     if traj.ndim == 2:
         num_steps, flat_dim = traj.shape
@@ -40,6 +31,16 @@ def animate_traj(traj, duration_sec=100, fps=60, stl_file="Assembly.STL"):
     text_actor = plotter.add_text("t=0.000 s", position="upper_left",
                                   font_size=14, color="black")
 
+    # --- Base point sphere (initialize at first node) ---
+    base_sphere = pv.Sphere(radius=0.1, center=pts0[0])
+    plotter.add_mesh(base_sphere, color="blue", name="base_sphere")
+    # --- Segments (every 2 nodes) ---
+    segments = []
+    for i in range(0, len(pts0)-1, 2):  # step=2 leaves gaps
+        seg = pv.Line(pts0[i], pts0[i+1])
+        segments.append(seg)
+    dashed_line = pv.MultiBlock(segments).combine()
+    seg_actor = plotter.add_mesh(dashed_line, color="blue", line_width=3)
     # --- Grid ---
     grid_size, grid_res = 100, 50
     grid_lines = []
@@ -84,9 +85,13 @@ def animate_traj(traj, duration_sec=100, fps=60, stl_file="Assembly.STL"):
         displacement = new_point - start_point
         drone_actor.points = stl_mesh.points + displacement + start_point
 
+        # move base sphere to first node
+        base_sphere.points = pv.Sphere(radius=0.1, center=pts[0]).points
+
         text_actor.SetText(0, f"t = {i*dt:.3f} s")
 
         plotter.update()
         time.sleep(dt)
 
     plotter.close()
+
