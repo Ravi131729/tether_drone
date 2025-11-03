@@ -32,7 +32,7 @@ def step_fn(carry, _):
 
     # Base excitation (example: vertical oscillation)
     omega_b = 2*jnp.pi*params["omega"]
-    z_pos = 0.1 * omega_b * jnp.cos(omega_b * t)
+    z_pos = 0*0.1 * omega_b * jnp.cos(omega_b * t)
     params["delta_base_pos"] = jnp.array([0.0, 0.0, z_pos]) * params["h"]
 
     # === State update ===
