@@ -9,7 +9,7 @@ def newton_solve(
     max_iter=20,
     log=False
 ):
-    # Wrap residual to include params if given
+
     if params is not None:
         F = lambda x: residual_fn(x, params)
     else:
@@ -32,7 +32,4 @@ def newton_solve(
 
     init_state = (x0, F(x0), 0, jnp.inf)
     Xk, r, k, dx_norm = jax.lax.while_loop(cond_fun, body_fun, init_state)
-
-
-
     return Xk

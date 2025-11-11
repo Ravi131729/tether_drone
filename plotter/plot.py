@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import jax.numpy as jnp
+import numpy as np
 
 def plot_xz_trajectory(traj, N, steps_to_plot=None):
     """
@@ -22,7 +22,9 @@ def plot_xz_trajectory(traj, N, steps_to_plot=None):
         coords = traj[step].reshape(num_nodes, 3)
         x = coords[:, 0]
         z = coords[:, 2]
-        plt.plot(x, z, marker="o", label=f"step {step}")
+        plt.plot(x, z, label=f"t =  {int(np.round(step / 10000))} s")
+        plt.plot(x[-1], z[-1] , marker = 'o')
+
 
     plt.xlabel("x")
     plt.ylabel("z")

@@ -32,7 +32,7 @@ def cayley(c):
     I = jax.numpy.eye(3)
     c_hat = hat(c)
 
-    print("Inverse of I - c_hat:", jax.numpy.linalg.inv(I - c_hat))
+    # print("Inverse of I - c_hat:", jax.numpy.linalg.inv(I - c_hat))
     return (I + c_hat) @ jax.numpy.linalg.inv(I - c_hat)
 def compute_Jd(J):
     trJ = jnp.trace(J)
@@ -58,10 +58,10 @@ def compute_M_terms(mu,qk,l_k,a):
 
 def residual_fn(Xk, params):
     # --- unpack once ---
-    mu, M, h, g, l_k, EA, N, force, L , kappa ,delta_base_pos , d,u_k ,base_pos , b , rho = (
+    mu, M, h, g, l_k, EA, N, force, L , kappa ,delta_base_pos , d,u_k ,base_pos , b , rho,R = (
         params['mu'], params['M'], params['h'], params['g'],
         params['l_k'], params['EA'], params['N'], params['force'],params['L'],params['kappa'] ,params["delta_base_pos"],
-        params['d'] , params['u_k'],params['base_pos'] , params['b'] , params['rho']
+        params['d'] , params['u_k'],params['base_pos'] , params['b'] , params['rho'],params['R']
 
 
     )
@@ -91,11 +91,11 @@ def residual_fn(Xk, params):
     M0km1 = (1/3)*mu*l_km1 + mu * spkm1 + kappa
 
     M3_k1 , M23_k , M31_k = compute_M_terms(mu,qk,l_k,a)
-    dot1 = M31_k[1:] * del_qk[1:-1] + M23_k[1:] * del_qk[1:-1]
+    dot1 = M31_k[1:] * del_qk[1:-1] + M23_k[0:-1] * del_qk[1:-1]
     sum1 = jnp.sum(dot1)
 
     M3_km1 , M23_km1 , M31_km1 = compute_M_terms(mu,q_km1,l_k,a)
-    dot2 = M31_km1[1:] * del_qkm1[1:-1] + M23_km1[1:] * del_qkm1[1:-1]
+    dot2 = M31_km1[1:] * del_qkm1[1:-1] + M23_km1[0:-1] * del_qkm1[1:-1]
     sum2 = jnp.sum(dot2)
 
     dq = qk[1:] - qk[:-1]  # (N,3)
@@ -104,7 +104,7 @@ def residual_fn(Xk, params):
     D_spk_Vk  =  (
         - mu * g * jnp.dot(base_pos,e3) + mu*g*d*jnp.sin((spk - b)/d)
         + (1/(2)) * mu* g * jnp.dot(e3,base_pos) + (1/(2*N)) * mu* g * jnp.sum(e3*qk[:-1]) + (1/(2*N)) * mu* g * jnp.sum(e3*qk[1:])
-        + (EA/(l_k**2)) *jnp.sum(dq_norm2 - l_k**2)
+        + (1/(2*N))*(EA/(l_k**2)) *jnp.sum(dq_norm2 - l_k**2)
 
     )
 
@@ -115,22 +115,23 @@ def residual_fn(Xk, params):
                     (1/h) * M0k * del_spk
                   + (1/h) * jnp.dot(M31_k[0] , del_qk[0])
                   + (1/h)* sum1
-                  + (1/h) *jnp.dot(M23_k[-2],del_qk[-1])
+                  + (1/h) *jnp.dot(M23_k[-1],del_qk[-1])
 
                   -  (1/h) * M0km1 * del_spkm1
                   - (1/h) * jnp.dot(M31_km1[0] ,del_qkm1[0])
                   - (1/h)* sum2
-                  - (1/h) *jnp.dot(M23_km1[-2],del_qkm1[-1])
+                  - (1/h) *jnp.dot(M23_km1[-1],del_qkm1[-1])
 
                   - (0.5/h) * mu * jnp.dot(delta_base_pos,delta_base_pos)
                   - (1/3)*(1/h)*mu* jnp.dot(del_spk,del_spk)
 
                   + (mu/(6*N*h))*(jnp.sum(del_qk[:-1] * del_qk[:-1]) - jnp.sum(del_qk[1:] * del_qk[1:]) - jnp.sum(del_qk[:-1] * del_qk[1:]))
-                  - h*D_spk_Vk + (h/d) * u_k
+                  + h*D_spk_Vk - (h/d) * u_k
                   + (h/(2*l_k**2)) * ((mu/(h**2))* (del_spk**2)  + EA ) * (jnp.linalg.norm(qk[1] - qk[0]) - l_k)**2
     )
-    print( h*D_spk_Vk + (h/d) * u_k)
-    spk_residual = del_spk
+    # jax.debug.print("value = {}", h * D_spk_Vk + (h/d) * u_k)
+
+    # spk_residual = del_spk
     string_residuals = jnp.zeros_like(del_qk)
 
 
@@ -187,36 +188,30 @@ def residual_fn(Xk, params):
     res_last = (
         (1/h) * (M1_k + M) * del_qk[-1]
       + (1/h) * M12_k * del_qk[-2]
-      + (1/h) * M23_k[-2] * del_spk
+      + (1/h) * M23_k[-1] * del_spk
       - (1/h) * (M1_k + M) * del_qkm1[-1]
       - (1/h) * M12_k * del_qkm1[-2]
-      - (1/h) * M23_km1[-2] * del_spkm1
+      - (1/h) * M23_km1[-1] * del_spkm1
       + (mu/(6*N*h)) * del_spk *del_qk [-1]
       + (mu/(3*N*h)) * del_spk * del_qk[-2]
 
-      + h * DqVk_last - h * force
+      + h * DqVk_last - h * force*R@e3
     )
     string_residuals = string_residuals.at[-1].set(res_last)
-
-    # # =====================================================
-    # # Attitude residual
-    # # =====================================================
-    # F_k   = cayley(del_qk[-1])
-    # F_km1 = cayley(del_qkm1[-1])
-
-    # res_att = (
-    #     (1.0/h) * vee(F_k @ Jd - Jd @ F_k.T - Jd @ F_km1 + F_km1.T @ Jd)
-    #   - h * tau
-    # )
-    # string_residuals = string_residuals.at[-1].set(res_att)
-
-    # =====================================================
-    # Return flat vector
-    # =====================================================
     residual = jnp.concatenate([jnp.atleast_1d(spk_residual), string_residuals.reshape(-1)])
-    print(spk_residual.shape, residual.shape)
+
     return residual
 
+def attitude_residual(fk,params):
 
+    # --- unpack once ---
+    J ,tau , f_km1,h= params['J'],params['tau'],params['f_km1'],params['h']
+    Jd = compute_Jd(J)
+    F_k   = cayley(fk)
+    F_km1 = cayley(f_km1)
 
-
+    res_att = (
+        (1.0/h) * vee(F_k @ Jd - Jd @ F_k.T - Jd @ F_km1 + F_km1.T @ Jd)
+      - h * tau
+    )
+    return res_att

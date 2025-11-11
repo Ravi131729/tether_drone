@@ -10,30 +10,40 @@ jax.config.update("jax_platforms", "cpu")
 # ----------------------------
 # Problem setup
 # ----------------------------
-L = 200.0
+L = 520
 N = 20
 h = 1e-4
-tf =2
+tf =10
 
 
 steps = int(tf / h)
-w_base = 2
-total_weight = 9.81 * (0.06 * L + 2.0)
-spk =180
+w_base = 1
+I = jnp.array([[0.105,0,0],  #drone moment of inertia
+              [0,0.105,0],
+              [0,0,0.140]])
+mu = 0.03
+M= 2.0                       #drone amss
+spk =500
 rho = jnp.array([0.15, 0.0, 0.3])
+total_weight = 9.81 * (mu * (L-spk) + M)
+uk=0.0                                   #winch torque
+F = 1.5*total_weight                        # thrust force
+R = jnp.eye(3)
+tau = [ 0.0,0.0,1.0]                        #torque on drone
+
 params = dict(
-    mu    = jnp.array(0.06),
-    M     = jnp.array(2.0),
+    mu    = jnp.array(mu),
+    M     = jnp.array(M),
     h     = jnp.array(h),
     g     = jnp.array(-9.81),
     L     = jnp.array(L),
     N     = N,
-    l_k   = L / N,
+    l_k   = L-spk / N,
     EA    = jnp.array(1.0e5),
     gkv   = make_initial_configuration(L-spk, N , rho , spk),
     g_km1v = make_initial_configuration(L-spk, N , rho , spk),
     X_km1 = jnp.zeros_like(make_initial_configuration(L, N , rho , spk)),
-    force = jnp.array([10, 0.0,  1.2*total_weight]),
+    force = F,
     omega = jnp.array(0.07),
     delta_base_pos = jnp.array([0.0, 0.0, 0.0]),
     step = 0,
@@ -42,7 +52,12 @@ params = dict(
     d = jnp.array(0.15),
     rho =rho,     #need to multiply with rotation mat of vehicle
     base_pos = jnp.array([0.0, 0.0, 0.0]),
-    u_k = jnp.array(0.0)
+    u_k = jnp.array(uk),
+    J = I,
+    f_km1 = jnp.array([0.0,0.0,0.0]),
+    fk = jnp.array([0.0,0.0,0.0]),
+    tau = jnp.array(tau),
+    R = R
 )
 print(params["g_km1v"])
 # ----------------------------
@@ -52,22 +67,26 @@ import time
 # params["gkv"] = fixed_point_iteration(params)
 # params["g_km1v"] =params["gkv"]
 # ##v_drone -= 1
-# params["g_km1v"] = params["gkv"].at[-3].set(params["gkv"][-3] - params["h"])
+# params["g_km1v"] = params["gkv"].at[-2].set(params["gkv"][-2] - params["h"])
 # params["X_km1"] = params["g_km1v"] - params["gkv"]
 # params["omega"] = jnp.array(w_base)
 run_simulation_jit = jax.jit(run_simulation, static_argnums=(1,))
 t0 = time.time()
-_ = run_simulation_jit(params)
+_ ,_r= run_simulation_jit(params)
 _.block_until_ready()
 print("First run:", time.time() - t0, "s")
 print("starting simulation")
 print("simulation running ..........")
+
+##forward Simulaion
 start = time.perf_counter()
-traj = run_simulation_jit(params, num_steps=steps)
+
+
+traj,traj_R = run_simulation_jit(params, num_steps=steps)
 traj.block_until_ready()
 end = time.perf_counter()
 
-# filename = f"stsim_test_omega{w_base:.3f}_tf{tf}s_L{L}_N{N}.npz"
+# filename = f"winch[{F[0]}]{uk}_tf{tf}s_L{L}_N{N}.npz"
 
 
 
@@ -80,7 +99,7 @@ print("Trajectory shape:", traj.shape)
 
 
 print("Trajectory shape:", traj[-1])
+print(traj_R[-1])
 
-
-plot_xz_trajectory(traj[:,1:], N=params["N"])
+# plot_xz_trajectory(traj[:,1:], N=params["N"])
 # animate_traj(np.array(traj[:,1:]), duration_sec=tf, fps=60, stl_file="models/Assembly.STL")
