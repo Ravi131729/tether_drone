@@ -58,10 +58,10 @@ def compute_M_terms(mu,qk,l_k,a):
 
 def residual_fn(Xk, params):
     # --- unpack once ---
-    mu, M, h, g, l_k, EA, N, force, L , kappa ,delta_base_pos , d,u_k ,base_pos , b , rho,R = (
+    mu, M, h, g, l_k, EA, N, force, L , kappa ,delta_base_pos , d,u_k ,base_pos , b , rho,R,R_v = (
         params['mu'], params['M'], params['h'], params['g'],
         params['l_k'], params['EA'], params['N'], params['force'],params['L'],params['kappa'] ,params["delta_base_pos"],
-        params['d'] , params['u_k'],params['base_pos'] , params['b'] , params['rho'],params['R']
+        params['d'] , params['u_k'],params['base_pos'] , params['b'] , params['rho'],params['R'],params['R_v']
 
 
     )
@@ -140,7 +140,7 @@ def residual_fn(Xk, params):
     # =====================================================
     # Base node residual
     # =====================================================
-    string_residuals = string_residuals.at[0].set(del_qk[0]  + qk[0] - base_pos - params["delta_base_pos"] - rho )
+    string_residuals = string_residuals.at[0].set(del_qk[0]  + qk[0] - base_pos - params["delta_base_pos"] - R@rho )  #need to include base attitide
 
     # =====================================================
     # Interior nodes (string elements)

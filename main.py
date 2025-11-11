@@ -57,6 +57,7 @@ params = dict(
     f_km1 = jnp.array([0.0,0.0,0.0]),
     fk = jnp.array([0.0,0.0,0.0]),
     tau = jnp.array(tau),
+    R_v = jnp.eye(3),
     R = R
 )
 print(params["g_km1v"])
