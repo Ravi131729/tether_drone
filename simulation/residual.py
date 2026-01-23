@@ -38,9 +38,9 @@ def compute_Jd(J):
     trJ = jnp.trace(J)
     return 0.5 * trJ * jnp.eye(3) - J
 
-def compute_M_terms(mu,qk,l_k,a):
+def compute_M_terms(mu,qk,l_k,a,params):
 
-    N = 20
+    N = params['N']
 
     dq  = qk[ :-1] - qk[1: ]
 
@@ -58,12 +58,10 @@ def compute_M_terms(mu,qk,l_k,a):
 
 def residual_fn(Xk, params):
     # --- unpack once ---
-    mu, M, h, g, l_k, EA, N, force, L , kappa ,delta_base_pos , d,u_k ,base_pos , b , rho,R,R_v = (
+    mu, M, h, g, l_k, EA, N, force, L , kappa ,delta_base_pos , d,u_k ,base_pos , b , rho,R,R_v ,a= (
         params['mu'], params['M'], params['h'], params['g'],
         params['l_k'], params['EA'], params['N'], params['force'],params['L'],params['kappa'] ,params["delta_base_pos"],
-        params['d'] , params['u_k'],params['base_pos'] , params['b'] , params['rho'],params['R'],params['R_v']
-
-
+        params['d'] , params['u_k'],params['base_pos'] , params['b'] , params['rho'],params['R'],params['R_v'],params['a']
     )
 
     del_spk ,Xk_vec= xl,del_qk = jnp.split(Xk,[1,])
@@ -82,7 +80,7 @@ def residual_fn(Xk, params):
 
     l_km1 = (L - spkm1)/N
 
-    a = jnp.arange(1.0, 20+1, dtype=jnp.float32)
+
 
     e3 = jnp.array([0.0,0.0,1.0])
     spk_residual = jnp.zeros_like(del_spk)
@@ -90,11 +88,11 @@ def residual_fn(Xk, params):
     M0k = (1/3)*mu*l_k + mu*spk + kappa
     M0km1 = (1/3)*mu*l_km1 + mu * spkm1 + kappa
 
-    M3_k1 , M23_k , M31_k = compute_M_terms(mu,qk,l_k,a)
+    M3_k1 , M23_k , M31_k = compute_M_terms(mu,qk,l_k,a,params)
     dot1 = M31_k[1:] * del_qk[1:-1] + M23_k[0:-1] * del_qk[1:-1]
     sum1 = jnp.sum(dot1)
 
-    M3_km1 , M23_km1 , M31_km1 = compute_M_terms(mu,q_km1,l_k,a)
+    M3_km1 , M23_km1 , M31_km1 = compute_M_terms(mu,q_km1,l_k,a,params)
     dot2 = M31_km1[1:] * del_qkm1[1:-1] + M23_km1[0:-1] * del_qkm1[1:-1]
     sum2 = jnp.sum(dot2)
 
@@ -131,16 +129,17 @@ def residual_fn(Xk, params):
     )
     # jax.debug.print("value = {}", h * D_spk_Vk + (h/d) * u_k)
 
-    # spk_residual = del_spk
+    spk_residual = del_spk        #uncomment for fixed length string
     string_residuals = jnp.zeros_like(del_qk)
-
+    # spk_residual = del_spk
 
 
 
     # =====================================================
     # Base node residual
     # =====================================================
-    string_residuals = string_residuals.at[0].set(del_qk[0]  + qk[0] - base_pos - params["delta_base_pos"] - R@rho )  #need to include base attitide
+    string_residuals = string_residuals.at[0].set(del_qk[0]  + qk[0] - base_pos - params["delta_base_pos"] - R_v@rho )  #need to include base attitide
+    string_residuals = string_residuals.at[0].set(del_qk[0] - params["delta_base_pos"] )  #need to include base attitide
 
     # =====================================================
     # Interior nodes (string elements)
@@ -201,7 +200,9 @@ def residual_fn(Xk, params):
     residual = jnp.concatenate([jnp.atleast_1d(spk_residual), string_residuals.reshape(-1)])
 
     return residual
-
+# =====================================================
+# attitude residual
+# =====================================================
 def attitude_residual(fk,params):
 
     # --- unpack once ---

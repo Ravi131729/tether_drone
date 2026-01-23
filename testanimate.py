@@ -1,8 +1,8 @@
-from plotter.animate import animate_traj
+from plotter.animate import animate_trajc
 import numpy as np
 import matplotlib.pyplot as plt
 # === Test file ===
-test_file = "winch_tf20s_L520.0_N20.npz"
+test_file = "tserp.npz"
 
 # === Simulation parameters ===
 
@@ -13,9 +13,10 @@ h = 1e-4
 
 
 
-# === Load test data ===
+# # === Load test data ===
 data = np.load(test_file)
 traj_nodes = data["trajectories"]  # (T, N, 3)
+print(traj_nodes.shape)
 num_steps, num_nodes = traj_nodes.shape
 
 time = np.arange(num_steps) * h
@@ -42,4 +43,4 @@ traj_nodes = traj_nodes.reshape(num_steps, num_nodes, 3)
 # fig.tight_layout()
 
 # plt.show()
-animate_traj(np.array(traj_nodes), duration_sec=20, fps=60, stl_file="models/Assembly.STL")
+animate_trajc(np.array(traj_nodes), duration_sec=20, fps= 60, stl_file="models/Assembly.STL")
