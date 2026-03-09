@@ -1,6 +1,6 @@
 import jax.numpy as jnp
 
-def make_initial_configuration(L, N, eps=1e-3):
+def make_initial_configuration(L, N, rho ,spk):
     """
     Create an initial straight-line configuration for the string.
 
@@ -13,11 +13,12 @@ def make_initial_configuration(L, N, eps=1e-3):
         (N+1)*3 vector flattened (shape: (3*(N+1),))
     """
     lk = L / N
-    x_coords = jnp.arange(0, N + 1) * lk * (1.0 / jnp.sqrt(2.0))
-    y_coords = jnp.zeros(N + 1)
-    z_coords = jnp.arange(0, N + 1) * lk * (1.0 / jnp.sqrt(2.0))
+    x_coords = rho[0] + jnp.arange(0, N + 1) * lk
+    y_coords = rho[1] + jnp.zeros(N + 1)
+    z_coords = rho[2]+ jnp.zeros(N + 1)
     X0 = jnp.stack([x_coords, y_coords, z_coords], axis=1)
-    return X0.reshape(-1)
+    return jnp.concatenate([jnp.atleast_1d(spk), X0.reshape(-1)])
+
 
 
 def unpack_Xk(Xk):

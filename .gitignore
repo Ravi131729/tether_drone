@@ -3,3 +3,15 @@
 *.png
 *.txt
 *.pyc
+*.mp4
+*.gif
+
+# Python cache/build artifacts
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Local environments / editor files
+.venv/
+venv/
+.DS_Store
