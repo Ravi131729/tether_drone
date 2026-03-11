@@ -170,10 +170,11 @@ if __name__ == "__main__":
 
     # all_freqs = jnp.concatenate([freqs_low[:-1], freqs_high])
 
-    freqs = jnp.concatenate([
-    jnp.linspace(0.0,1.0,100,endpoint=False),
-    jnp.linspace(1.0,5.0,100)
-    ])
+    # freqs = jnp.concatenate([
+    # jnp.linspace(0.0,1.0,100,endpoint=False),
+    # jnp.linspace(1.0,5.0,100)
+    # ])
+    freqs = jnp.linspace(0.0,1.0,100)
 
     # split across MPI ranks
     freqs_split = np.array_split(np.array(freqs), size)
