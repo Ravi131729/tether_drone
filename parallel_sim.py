@@ -26,7 +26,7 @@ size = comm.Get_size()
 L = 15
 N = 20
 h = 1e-4
-tf = 20
+tf = 200
 steps = int(tf / h)
 
 mu = 0.03
