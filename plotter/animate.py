@@ -175,15 +175,15 @@ def animate_trajc(traj,duration_sec=100, fps=60, stl_file="Assembly.STL"):
     ]
 
     plotter.show_axes()
-    plotter.enable_anti_aliasing("fxaa")
+    
     base_traj = [pts0[0]]
     base_line = pv.PolyData(np.array(base_traj))
     plotter.add_mesh(base_line, color="green", line_width=3, name="base_traj")
 
     # --- Interactive window ---
-    plotter.show(interactive_update=True)
     out_name = "mecc1.5.mp4"
     plotter.open_movie(out_name, framerate=fps)
+    plotter.show(interactive_update=True)
     # --- Animate ---
     for i in range(T):
         pts = data[i].reshape(N_plus_1, 3)
