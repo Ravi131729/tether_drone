@@ -13,9 +13,9 @@ def make_initial_configuration(L, N, rho ,spk):
         (N+1)*3 vector flattened (shape: (3*(N+1),))
     """
     lk = L / N
-    x_coords = rho[0] + jnp.arange(0, N + 1) * lk
+    x_coords = rho[0] + jnp.zeros(N + 1)
     y_coords = rho[1] + jnp.zeros(N + 1)
-    z_coords = rho[2]+ jnp.zeros(N + 1)
+    z_coords = rho[2]+ jnp.arange(0, N + 1) * lk
     X0 = jnp.stack([x_coords, y_coords, z_coords], axis=1)
     return jnp.concatenate([jnp.atleast_1d(spk), X0.reshape(-1)])
 
