@@ -13,7 +13,7 @@ jax.config.update("jax_platforms", "cpu")
 L = 15
 N = 20
 h = 1e-4
-tf =20
+tf =200
 
 
 steps = int(tf / h)
@@ -78,7 +78,7 @@ perturb = 0.5 * jax.random.normal(key, params["gkv"].shape)
 
 params["g_km1v"] = params["gkv"] + perturb
 params["X_km1"] = perturb
-params["X_km1"] = params["xkm1"].at[0].set(0.0)
+params["X_km1"] = params["X_km1"].at[0].set(0.0)
 params["X_km1"] = params["X_km1"].at[1].set(0.0)
 params["X_km1"] = params["X_km1"].at[2].set(0.0)
 

@@ -141,7 +141,7 @@ def run_and_save(freqs, params):
 
         traj = np.array(traj)
 
-        filename = f"results/sim_rank{rank}_omega{float(w_base):.3f}.npz"
+        filename = f"results1to5/sim_rank{rank}_omega{float(w_base):.3f}.npz"
 
         np.savez(
             filename,
