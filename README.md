@@ -35,23 +35,10 @@ This will run the simulation and save output (for example `free_fall.npz`).
 
 - Numerical trajectories are stored in `.npz` files.
 - Plotting/animation helpers are available in `plotter/`.
-- Existing demo videos are available as `.mp4` files in the repository root.
 
-## Two Tether-Drone Simulations
 
-Add your final GIFs in the paths below (or update paths to match your files).
 
-### Simulation 1: Free-Fall / Baseline
 
-![Simulation 1 GIF placeholder](./assets/simulation_1.gif)
-
-Description: Baseline tether-drone response under current LGVI setup.
-
-### Simulation 2: Winch/Actuation Scenario
-
-![Simulation 2 GIF placeholder](./assets/simulation_2.gif)
-
-Description: Tether length/winch-influenced behavior and coupled drone motion.
 
 ## Notes
 
