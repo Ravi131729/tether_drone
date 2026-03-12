@@ -2,9 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # === Load saved results ===
-data = np.load("results/sim_rank0_omega0.000_tf500.0s_L20.0_N50.npz")
+data = np.load("results/sim_rank14_omega0.140.npz")
 traj_nodes = data["trajectories"]   # shape (num_steps, flat_dim)
+traj_nodes = traj_nodes[:,1:]
 
+num_steps = traj_nodes.shape[0]
+num_nodes = traj_nodes.shape[1] // 3  # 6 // 3 = 2
+
+traj_nodes = traj_nodes.reshape(num_steps, num_nodes, 3)
 # === Reshape ===
 print(traj_nodes.shape)
 # num_steps, flat_dim  = traj_nodes.shape

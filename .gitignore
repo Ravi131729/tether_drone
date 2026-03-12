@@ -14,4 +14,5 @@ __pycache__/
 # Local environments / editor files
 .venv/
 venv/
+results/
 .DS_Store

@@ -44,7 +44,7 @@ def step_fn(carry, _):
     omega = omega_x
     x_pos = 0*Rx * jnp.cos(omega * t)
     y_pos = 0*Ry * jnp.sin(omega * t)
-    params["delta_base_pos"] = jnp.array([x_pos, y_pos, 0.0])*params["h"]
+    params["delta_base_pos"] = jnp.array([0.0, 0.0, z_pos])*params["h"]
 
     # tau_y = 0.01*omega_b**2*jnp.cos(omega_b*t)
 

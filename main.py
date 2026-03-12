@@ -13,7 +13,7 @@ jax.config.update("jax_platforms", "cpu")
 L = 15
 N = 20
 h = 1e-4
-tf =200
+tf =20
 
 
 steps = int(tf / h)
@@ -30,7 +30,7 @@ uk=0.0                                   #winch torque
 F = 1.2*total_weight                        # thrust force
 R = jnp.eye(3)
 tau = [ 0.0,0.0,0.0]                        #torque on drone
-omega = 1.0
+omega = 0.0
 params = dict(
     mu    = jnp.array(mu),
     M     = jnp.array(M),
@@ -72,6 +72,16 @@ params["g_km1v"] =params["gkv"]
 params["g_km1v"] = params["gkv"].at[-3].set(params["gkv"][-3] - 1*params["h"])
 params["X_km1"] = params["g_km1v"] - params["gkv"]
 # params["omega"] = jnp.array(w_base)
+key = jax.random.PRNGKey(0)
+
+perturb = 0.5 * jax.random.normal(key, params["gkv"].shape)
+
+params["g_km1v"] = params["gkv"] + perturb
+params["X_km1"] = perturb
+params["X_km1"] = params["xkm1"].at[0].set(0.0)
+params["X_km1"] = params["X_km1"].at[1].set(0.0)
+params["X_km1"] = params["X_km1"].at[2].set(0.0)
+
 run_simulation_jit = jax.jit(run_simulation, static_argnums=(1,))
 t0 = time.time()
 _ ,_r,_= run_simulation_jit(params)
@@ -88,7 +98,7 @@ traj,traj_R,traj_fk = run_simulation_jit(params, num_steps=steps)
 traj.block_until_ready()
 end = time.perf_counter()
 
-filename = f"test.npz"
+filename = f"extractmodes.npz"
 
 
 

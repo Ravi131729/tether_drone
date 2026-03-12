@@ -2,7 +2,7 @@ from plotter.animate import animate_trajc
 import numpy as np
 import matplotlib.pyplot as plt
 # === Test file ===
-test_file = "test.npz"
+test_file = "results/sim_rank14_omega0.140.npz"
 
 # === Simulation parameters ===
 
