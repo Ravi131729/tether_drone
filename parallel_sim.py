@@ -30,7 +30,7 @@ tf = 200
 steps = int(tf / h)
 
 mu = 0.03
-M = 10.0
+M = 2.5
 spk = 5
 
 rho = jnp.array([0.15,0.0,0.3]) * 0
@@ -71,7 +71,7 @@ def make_params():
 
         X_km1=jnp.zeros_like(make_initial_configuration(L, N, rho, spk)),
 
-        force=1.5 * total_weight,
+        force=1.2 * total_weight,
 
         omega=jnp.array(1.0),
 
@@ -141,7 +141,7 @@ def run_and_save(freqs, params):
 
         traj = np.array(traj)
 
-        filename = f"1.5results1to5/sim_rank{rank}_omega{float(w_base):.3f}.npz"
+        filename = f"2.5kgresults1to5/sim_rank{rank}_omega{float(w_base):.3f}.npz"
 
         np.savez(
             filename,
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     freqs_split = np.array_split(np.array(freqs), size)
     my_freqs = freqs_split[rank]
 
-    os.makedirs("1.5results1to5", exist_ok=True)
+    os.makedirs("2.5kgresults1to5", exist_ok=True)
 
     print(f"[Rank {rank}] running {len(my_freqs)} cases")
 
