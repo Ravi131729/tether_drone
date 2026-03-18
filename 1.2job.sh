@@ -11,4 +11,4 @@ source activate jax-ai-stack
 export XLA_PYTHON_CLIENT_PREALLOCATE=false
 
 # Launch MPI program
-srun python 1.2parallel_sim.py
+srun python 1.2parallelsim.py
