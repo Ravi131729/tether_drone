@@ -167,7 +167,7 @@ def animate_trajc(traj,duration_sec=100, fps=60, stl_file="Assembly.STL"):
     plotter.add_mesh(drone_actor, name="stl_actor", color="lightblue")
 
     # --- Camera ---
-    cam_pos = pts0[0] + np.array([0, -2, 0])
+    cam_pos = pts0[0] + np.array([0, -25, 5])
     plotter.camera_position = [
         (cam_pos[0], cam_pos[1], cam_pos[2]),  # camera pos
         (cam_pos[0], 0, cam_pos[2]),           # focal point
@@ -209,7 +209,7 @@ def animate_trajc(traj,duration_sec=100, fps=60, stl_file="Assembly.STL"):
         # ]
 
         # move base sphere to first node
-        base_sphere.points = pv.Sphere(radius=0.01, center=pts[0]).points
+        base_sphere.points = pv.Sphere(radius=0.051, center=pts[0]).points
 
         text_actor.SetText(0, f"t = {i*dt:.3f} s")
 
@@ -218,4 +218,3 @@ def animate_trajc(traj,duration_sec=100, fps=60, stl_file="Assembly.STL"):
         time.sleep(dt)
 
     plotter.close()
-

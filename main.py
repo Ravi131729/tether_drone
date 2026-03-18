@@ -22,12 +22,12 @@ I = jnp.array([[0.105,0,0],  #drone moment of inertia
               [0,0.105,0],
               [0,0,0.140]])
 mu = 0.03
-M= 10.0                       #drone mass
+M= 2.5                       #drone mass
 spk =5
 rho = 0*jnp.array([0.15, 0.0, 0.3])
 total_weight = 9.81 * (mu * (L-spk) + M)
 uk=0.0                                   #winch torque
-F = 1.2*total_weight                        # thrust force
+F = 1.1*total_weight                        # thrust force
 R = jnp.eye(3)
 tau = [ 0.0,0.0,0.0]                        #torque on drone
 omega = 0.0
@@ -72,15 +72,35 @@ params["g_km1v"] =params["gkv"]
 params["g_km1v"] = params["gkv"].at[-3].set(params["gkv"][-3] - 1*params["h"])
 params["X_km1"] = params["g_km1v"] - params["gkv"]
 # params["omega"] = jnp.array(w_base)
-key = jax.random.PRNGKey(0)
+# key = jax.random.PRNGKey(0)
 
-perturb = 0.5 * jax.random.normal(key, params["gkv"].shape)
+# perturb = 1* jax.random.normal(key, params["gkv"].shape)
+# perturb = jax.random.normal(key, params["gkv"].shape)
+# perturb = perturb.at[0].set(0.0)
 
-params["g_km1v"] = params["gkv"] + perturb
-params["X_km1"] = perturb
-params["X_km1"] = params["X_km1"].at[0].set(0.0)
-params["X_km1"] = params["X_km1"].at[1].set(0.0)
-params["X_km1"] = params["X_km1"].at[2].set(0.0)
+# perturb = perturb.at[2::3].set(0.0)  # remove y
+# perturb = perturb.at[3::3].set(0.0)  # remove z
+# params["g_km1v"] = params["gkv"] + perturb * params["h"]
+# params["X_km1"] = params["g_km1v"] - params["gkv"]
+
+# # optionally keep s fixed
+# params["X_km1"] = params["X_km1"].at[0].set(0.0)
+
+
+# # params["g_km1v"] = params["gkv"] + perturb*params["h"]
+
+# # params["X_km1"] = params["g_km1v"] - params["gkv"]
+# # params["X_km1"] = params["X_km1"].at[0].set(0.0)
+# # params["X_km1"] = params["X_km1"].at[1].set(0.0)
+# # params["X_km1"] = params["X_km1"].at[2].set(0.0)
+
+# # perturb = jax.random.normal(key, params["gkv"].shape).at[1::3].set(0.0)
+
+# # params["X_km1"] = perturb * params["h"]
+# # params["X_km1"] = params["X_km1"].at[:3].set(0.0)
+
+# # params["g_km1v"] = params["gkv"] + params["X_km1"]
+# print("Initial perturbation added to cable nodes (except base):", params["X_km1"])
 
 run_simulation_jit = jax.jit(run_simulation, static_argnums=(1,))
 t0 = time.time()
@@ -98,7 +118,7 @@ traj,traj_R,traj_fk = run_simulation_jit(params, num_steps=steps)
 traj.block_until_ready()
 end = time.perf_counter()
 
-filename = f"extractmodes.npz"
+filename = f"x_extractmodes.npz"
 
 
 

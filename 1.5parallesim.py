@@ -141,7 +141,7 @@ def run_and_save(freqs, params):
 
         traj = np.array(traj)
 
-        filename = f"2.5kgresults0to1/sim_rank{rank}_omega{float(w_base):.3f}.npz"
+        filename = f"1.5kgresults0.0to1.5/sim_rank{rank}_omega{float(w_base):.3f}.npz"
 
         np.savez(
             filename,
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     freqs_split = np.array_split(np.array(freqs), size)
     my_freqs = freqs_split[rank]
 
-    os.makedirs("2.5kgresults0to1", exist_ok=True)
+    os.makedirs("1.5kgresults0.0to1.5", exist_ok=True)
 
     print(f"[Rank {rank}] running {len(my_freqs)} cases")
 

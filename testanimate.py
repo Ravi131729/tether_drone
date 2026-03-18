@@ -2,7 +2,7 @@ from plotter.animate import animate_trajc
 import numpy as np
 import matplotlib.pyplot as plt
 # === Test file ===
-test_file = "results/sim_rank14_omega0.140.npz"
+test_file = "results/sim_rank7_omega0.070.npz"
 
 # === Simulation parameters ===
 
@@ -43,4 +43,4 @@ traj_nodes = traj_nodes.reshape(num_steps, num_nodes, 3)
 # fig.tight_layout()
 
 # plt.show()
-animate_trajc(np.array(traj_nodes), duration_sec=20, fps= 60, stl_file="models/Assembly.STL")
+animate_trajc(np.array(traj_nodes), duration_sec=200, fps= 30, stl_file="models/Assembly.STL")

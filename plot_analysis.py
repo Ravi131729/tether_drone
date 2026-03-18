@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # === Load saved results ===
-data = np.load("results/sim_rank14_omega0.140.npz")
+data = np.load("results/sim_rank25_omega2.010.npz")
 traj_nodes = data["trajectories"]   # shape (num_steps, flat_dim)
 traj_nodes = traj_nodes[:,1:]
 
@@ -74,7 +74,9 @@ print(f"Max position magnitude = {tip_mag.max():.4f} m")
 print(f"Min position magnitude = {tip_mag.min():.4f} m")
 print(f"Max elevation angle = {tip_angle.max():.2f} deg")
 print(f"Min elevation angle = {tip_angle.min():.2f} deg")
-
+print(f"Dominant frequency = {freqs[np.argmax(mag[1:]) + 1]:.3f} Hz")
+print(f"Initial position magnitude = {tip_mag[0]:.4f} m")
+print(f"Mean elevation angle = {np.mean(tip_angle):.2f} deg")
 # === Save ===
 fig1.savefig("drone_position.svg", format="svg")
 fig2.savefig("drone_angle.svg", format="svg")
