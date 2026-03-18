@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #SBATCH --job-name 1.5parallel_sim
 #SBATCH --ntasks 150
