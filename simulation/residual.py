@@ -63,7 +63,7 @@ def residual_fn(Xk, params):
         params['l_k'], params['EA'], params['N'], params['force'],params['L'],params['kappa'] ,params["delta_base_pos"],
         params['d'] , params['u_k'],params['base_pos'] , params['b'] , params['rho'],params['R'],params['R_v'],params['a']
     )
-
+    # force = jnp.array([15.0, 0.0, force])
     del_spk ,Xk_vec= xl,del_qk = jnp.split(Xk,[1,])
     del_qk   = Xk_vec.reshape(-1,3)
 
@@ -129,7 +129,7 @@ def residual_fn(Xk, params):
     )
     # jax.debug.print("value = {}", h * D_spk_Vk + (h/d) * u_k)
 
-    spk_residual = del_spk        #uncomment for fixed length string
+    # spk_residual = del_spk        #uncomment for fixed length string
     string_residuals = jnp.zeros_like(del_qk)
     # spk_residual = del_spk
 

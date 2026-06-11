@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # === Load saved results ===
-data = np.load("results/sim_rank25_omega2.010.npz")
+data = np.load("10test1.2.npz")
 traj_nodes = data["trajectories"]   # shape (num_steps, flat_dim)
 traj_nodes = traj_nodes[:,1:]
 

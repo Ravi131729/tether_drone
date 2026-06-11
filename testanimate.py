@@ -1,8 +1,8 @@
-from plotter.animate import animate_trajc
+from plotter.animate import animate_trajc,snapshot_multiple_times,animate_traj
 import numpy as np
 import matplotlib.pyplot as plt
 # === Test file ===
-test_file = "results/sim_rank7_omega0.070.npz"
+test_file = "test.npz"
 
 # === Simulation parameters ===
 
@@ -16,6 +16,7 @@ h = 1e-4
 # # === Load test data ===
 data = np.load(test_file)
 traj_nodes = data["trajectories"]  # (T, N, 3)
+traj_R = data["rot_mat"]  # (T, 3, 3)
 print(traj_nodes.shape)
 num_steps, num_nodes = traj_nodes.shape
 
@@ -43,4 +44,9 @@ traj_nodes = traj_nodes.reshape(num_steps, num_nodes, 3)
 # fig.tight_layout()
 
 # plt.show()
-animate_trajc(np.array(traj_nodes), duration_sec=200, fps= 30, stl_file="models/Assembly.STL")
+animate_trajc(np.array(traj_nodes), duration_sec=20, fps= 30, stl_file="models/Assembly.STL")
+# animate_traj(np.array(traj_nodes),traj_R, duration_sec=30, fps= 10, stl_file="models/Assembly.STL")
+# time_indices = [0, 20, 50, 100, 150]
+
+# snapshot_multiple_times(np.array(traj_nodes), time_indices)
+# snapshot_multiple_times(np.array(traj_nodes), frame_indices=[0, 10, 20], stl_file="models/Assembly.STL", out_names=["tether_snapshot_0.png", "tether_snapshot_10.png", "tether_snapshot_20.png"])

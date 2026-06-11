@@ -6,7 +6,7 @@ def newton_solve(
     x0,                   # initial guess
     params=None,          # optional parameters to pass to residual_fn
     tol=1e-12,
-    max_iter=20,
+    max_iter=200,
     log=False
 ):
 

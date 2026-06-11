@@ -10,10 +10,10 @@ jax.config.update("jax_platforms", "cpu")
 # ----------------------------
 # Problem setup
 # ----------------------------
-L = 15
-N = 20
+L = 110
+N = 5
 h = 1e-4
-tf =200
+tf =20
 
 
 steps = int(tf / h)
@@ -22,15 +22,21 @@ I = jnp.array([[0.105,0,0],  #drone moment of inertia
               [0,0.105,0],
               [0,0,0.140]])
 mu = 0.03
-M= 2.5                       #drone mass
-spk =5
+M= 5.234                      #drone mass
+spk =100
 rho = 0*jnp.array([0.15, 0.0, 0.3])
 total_weight = 9.81 * (mu * (L-spk) + M)
-uk=0.0                                   #winch torque
-F = 1.1*total_weight                        # thrust force
+print("Total weight (N):", total_weight)
+uk=1.34                             #winch torque
+# F = 1.1*total_weight                        # thrust force
+F = 62                        # thrust force
 R = jnp.eye(3)
 tau = [ 0.0,0.0,0.0]                        #torque on drone
 omega = 0.0
+kappa = 0.011/(0.15**2)
+data = np.load("lgvi_mpc_results.npz")
+control = jnp.array(data["sim_controls"])
+
 params = dict(
     mu    = jnp.array(mu),
     M     = jnp.array(M),
@@ -47,7 +53,7 @@ params = dict(
     omega = jnp.array(omega),
     delta_base_pos = jnp.array([0.0, 0.0, 0.0]),
     step = 0,
-    kappa = jnp.array(1),  ##need to change accordingly
+    kappa = jnp.array(kappa),  ##need to change accordingly
     b = jnp.array(0.3),
     d = jnp.array(0.15),
     rho =rho,     #need to multiply with rotation mat of vehicle
@@ -59,7 +65,10 @@ params = dict(
     fk = jnp.array([0.0,0.0,0.0]),
     tau = jnp.array(tau),
     R_v = jnp.eye(3),
-    R = R
+    R = R,
+    tf  = tf,
+    mpc_controls = control,
+    mpc_control_dt = jnp.array(0.1)
 )
 print(params["g_km1v"])
 # ----------------------------
@@ -69,7 +78,7 @@ import time
 # =-
 params["g_km1v"] =params["gkv"]
 # ##v_drone -= 1
-params["g_km1v"] = params["gkv"].at[-3].set(params["gkv"][-3] - 1*params["h"])
+# params["g_km1v"] = params["gkv"].at[-3].set(params["gkv"][-3] + 1*params["h"])
 params["X_km1"] = params["g_km1v"] - params["gkv"]
 # params["omega"] = jnp.array(w_base)
 # key = jax.random.PRNGKey(0)
@@ -118,7 +127,7 @@ traj,traj_R,traj_fk = run_simulation_jit(params, num_steps=steps)
 traj.block_until_ready()
 end = time.perf_counter()
 
-filename = f"x_extractmodes.npz"
+filename = f"test.npz"
 
 
 

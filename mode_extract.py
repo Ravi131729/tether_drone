@@ -7,7 +7,7 @@ from scipy.fft import rfft, rfftfreq
 # ============================================================
 
 # data = np.load("xz_extractmodes.npz")
-data = np.load("x_extractmodes.npz")
+data = np.load("test1.1.npz")
 
 traj_nodes = data["trajectories"]     # (num_steps, flat_dim)
 
