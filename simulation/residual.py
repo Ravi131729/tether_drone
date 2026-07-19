@@ -129,7 +129,7 @@ def residual_fn(Xk, params):
     )
     # jax.debug.print("value = {}", h * D_spk_Vk + (h/d) * u_k)
 
-    # spk_residual = del_spk        #uncomment for fixed length string
+    spk_residual = del_spk        #uncomment for fixed length string
     string_residuals = jnp.zeros_like(del_qk)
     # spk_residual = del_spk
 

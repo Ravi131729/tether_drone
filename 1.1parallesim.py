@@ -23,7 +23,7 @@ size = comm.Get_size()
 # Problem setup
 # ----------------------------
 
-L = 15
+L = 10
 N = 20
 h = 1e-4
 tf = 200

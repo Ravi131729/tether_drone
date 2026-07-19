@@ -44,7 +44,7 @@ traj_nodes = traj_nodes.reshape(num_steps, num_nodes, 3)
 # fig.tight_layout()
 
 # plt.show()
-animate_trajc(np.array(traj_nodes), duration_sec=20, fps= 30, stl_file="models/Assembly.STL")
+animate_trajc(np.array(traj_nodes), duration_sec=30, fps= 10, stl_file="models/Assembly.STL")
 # animate_traj(np.array(traj_nodes),traj_R, duration_sec=30, fps= 10, stl_file="models/Assembly.STL")
 # time_indices = [0, 20, 50, 100, 150]
 

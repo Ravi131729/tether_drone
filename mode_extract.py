@@ -6,8 +6,8 @@ from scipy.fft import rfft, rfftfreq
 # Load data
 # ============================================================
 
-# data = np.load("xz_extractmodes.npz")
-data = np.load("test1.1.npz")
+data = np.load("results/sim_rank0_omega0.000.npz")
+# data = np.load("test1.1.npz")
 
 traj_nodes = data["trajectories"]     # (num_steps, flat_dim)
 

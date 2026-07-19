@@ -167,7 +167,7 @@ def animate_trajc(traj,duration_sec=100, fps=60, stl_file="Assembly.STL"):
     plotter.add_mesh(drone_actor, name="stl_actor", color="lightblue")
 
     # --- Camera ---
-    cam_pos = pts0[0] + np.array([0, -50, 30])
+    cam_pos = pts0[0] + np.array([0, -50, 0])
     plotter.camera_position = [
         (cam_pos[0], cam_pos[1], cam_pos[2]),  # camera pos
         (cam_pos[0], 0, cam_pos[2]),           # focal point
@@ -180,6 +180,19 @@ def animate_trajc(traj,duration_sec=100, fps=60, stl_file="Assembly.STL"):
     base_line = pv.PolyData(np.array(base_traj))
     plotter.add_mesh(base_line, color="green", line_width=3, name="base_traj")
 
+    ref_traj = [[   0, 0, 10],
+                    [  0, 0, 12],
+                    [  0, 0, 14],
+                    [0,0,16],
+                    [  0, 0, 18],
+                    [  0, 0, 20],
+                    [  0, 0, 22],
+                    [  0, 0, 24],
+                    [  0, 0, 26],
+                    [  0, 0, 28],
+                [  0, 0, 30],]
+    ref_line = pv.PolyData(np.array(ref_traj))
+    plotter.add_mesh(ref_line, color="blue", line_width=3, name="ref_traj")
     # --- Interactive window ---
     out_name = "vel4_circle.mp4"
     plotter.open_movie(out_name, framerate=fps)
@@ -202,12 +215,16 @@ def animate_trajc(traj,duration_sec=100, fps=60, stl_file="Assembly.STL"):
         new_point = pts[-1]
         displacement = new_point - start_point
         drone_actor.points = stl_mesh.points + new_point#stl_mesh.points + displacement + start_point
+        # plotter.camera_position = [
+        # (cam_pos[1]*np.sin(0.05*i*dt), cam_pos[1]*np.cos(0.05*i*dt), cam_pos[2]+30),  # camera pos
+        # (cam_pos[0], 0, cam_pos[2]-20),           # focal point
+        # (0, 0, 1),
+        # ]
         plotter.camera_position = [
-        (cam_pos[1]*np.sin(0.05*i*dt), cam_pos[1]*np.cos(0.05*i*dt), cam_pos[2]),  # camera pos
-        (cam_pos[0], 0, cam_pos[2]-20),           # focal point
+        (cam_pos[1], cam_pos[1]*np.cos(0.05*i*dt), cam_pos[2]),  # camera pos
+        (cam_pos[0], 0, cam_pos[2]),           # focal point
         (0, 0, 1),
         ]
-
         # move base sphere to first node
         base_sphere.points = pv.Sphere(radius=0.051, center=pts[0]).points
 

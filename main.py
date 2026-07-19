@@ -13,7 +13,7 @@ jax.config.update("jax_platforms", "cpu")
 L = 110
 N = 5
 h = 1e-4
-tf =20
+tf =30
 
 
 steps = int(tf / h)
